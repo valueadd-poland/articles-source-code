@@ -1,8 +1,7 @@
-import { IsDefined, IsString } from "class-validator";
+import { IsDefined, IsString } from 'class-validator';
 
 export class OrderDto {
   @IsString()
   @IsDefined()
-  uuid!: string
+  uuid!: string;
 }
-

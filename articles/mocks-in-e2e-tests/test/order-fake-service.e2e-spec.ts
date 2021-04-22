@@ -1,23 +1,27 @@
-import { INestApplication } from "@nestjs/common";
-import { Test } from "@nestjs/testing";
-import * as request from "supertest";
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
 
-import {OrdersModule, PaymentStatus} from "../src/orders";
+import { OrdersModule, PaymentStatus } from '../src/orders';
 
-import {start, shutdown, confirmOrder} from "./payment-gateway-fake/bootstrap"
+import {
+  start,
+  shutdown,
+  confirmOrder,
+} from './payment-gateway-fake/bootstrap';
 
 let app: INestApplication;
 
 /**
  * for brevity
  */
-const paymentGatewayUrl = "http://localhost:1337";
+const paymentGatewayUrl = 'http://localhost:1337';
 process.env.PAYMENT_GATEWAY = paymentGatewayUrl;
 
 beforeAll(async () => {
-  process.env.PAYMENT_GATEWAY = await start(1337)
+  process.env.PAYMENT_GATEWAY = await start(1337);
   const moduleFixture = await Test.createTestingModule({
-    imports: [OrdersModule]
+    imports: [OrdersModule],
   }).compile();
 
   app = moduleFixture.createNestApplication();
@@ -25,17 +29,17 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await app.close()
-  await shutdown()
-})
+  await app.close();
+  await shutdown();
+});
 
 describe(`when order was submitted`, () => {
-  const uuid = "test-order-uuid";
-  it("should ACK the order", () => {
+  const uuid = 'test-order-uuid';
+  it('should ACK the order', () => {
     return request(app.getHttpServer())
-      .post("/")
+      .post('/')
       .send({
-        uuid
+        uuid,
       })
       .expect(201);
   });
@@ -51,20 +55,18 @@ describe(`when order was submitted`, () => {
     });
 
     describe(`when asking for a status after it was completed`, () => {
-
       beforeEach(() => {
-        confirmOrder(uuid) // clear intention
-      })
+        confirmOrder(uuid); // clear intention
+      });
 
       it(`should return \`approved\` state`, () => {
         return request(app.getHttpServer())
           .get(`/${uuid}`)
           .expect(200)
-          .then(res => {
+          .then((res) => {
             expect(res.body.status).toEqual(PaymentStatus.Approved);
           });
       });
     });
   });
-
 });

@@ -1,11 +1,10 @@
-import { HttpModule, Module } from "@nestjs/common";
-import { Service } from "./service";
-import { OrdersController } from "./controller";
+import { HttpModule, Module } from '@nestjs/common';
+import { Service } from './service';
+import { OrdersController } from './controller';
 
 @Module({
   imports: [HttpModule],
   providers: [Service],
-  controllers: [OrdersController]
+  controllers: [OrdersController],
 })
-export class OrdersModule {
-}
+export class OrdersModule {}

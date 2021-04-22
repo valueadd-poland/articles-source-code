@@ -1,9 +1,9 @@
-import { INestApplication } from "@nestjs/common";
-import { Test } from "@nestjs/testing";
-import * as request from "supertest";
-import AxiosMockAdapter from "axios-mock-adapter";
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
+import AxiosMockAdapter from 'axios-mock-adapter';
 
-import {OrdersModule, PaymentStatus} from "../src/orders";
+import { OrdersModule, PaymentStatus } from '../src/orders';
 
 let app: INestApplication;
 let axiosMock: AxiosMockAdapter;
@@ -11,25 +11,25 @@ let axiosMock: AxiosMockAdapter;
 /**
  * for brevity
  */
-const paymentGatewayUrl = "http://localhost:1337";
+const paymentGatewayUrl = 'http://localhost:1337';
 process.env.PAYMENT_GATEWAY = paymentGatewayUrl;
 
 beforeAll(async () => {
   const moduleFixture = await Test.createTestingModule({
-    imports: [OrdersModule]
+    imports: [OrdersModule],
   }).compile();
 
   app = moduleFixture.createNestApplication();
   await app.init();
 
   // bind interceptor, force throw on any non-mocked route
-  axiosMock = new AxiosMockAdapter(app.get("AXIOS_INSTANCE_TOKEN"), {
-    onNoMatch: "throwException"
+  axiosMock = new AxiosMockAdapter(app.get('AXIOS_INSTANCE_TOKEN'), {
+    onNoMatch: 'throwException',
   });
 });
 
 describe(`when order was submitted`, () => {
-  const uuid = "test-order-uuid";
+  const uuid = 'test-order-uuid';
 
   beforeEach(() => {
     // "configure" responses
@@ -40,19 +40,19 @@ describe(`when order was submitted`, () => {
       .replyOnce(200, {})
       .onGet(paymentGatewayUrl + `/${uuid}`)
       .replyOnce(200, {
-        status: PaymentStatus.Pending
+        status: PaymentStatus.Pending,
       })
       .onGet(paymentGatewayUrl + `/${uuid}`)
       .replyOnce(200, {
-        status: PaymentStatus.Approved
+        status: PaymentStatus.Approved,
       });
   });
 
-  it("should ACK the order", () => {
+  it('should ACK the order', () => {
     return request(app.getHttpServer())
-      .post("/")
+      .post('/')
       .send({
-        uuid
+        uuid,
       })
       .expect(201);
   });
@@ -72,11 +72,10 @@ describe(`when order was submitted`, () => {
         return request(app.getHttpServer())
           .get(`/${uuid}`)
           .expect(200)
-          .then(res => {
+          .then((res) => {
             expect(res.body.status).toEqual(PaymentStatus.Approved);
           });
       });
     });
   });
-
 });

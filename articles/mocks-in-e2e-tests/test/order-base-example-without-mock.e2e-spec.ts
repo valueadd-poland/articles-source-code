@@ -1,20 +1,20 @@
-import { INestApplication } from "@nestjs/common";
-import { Test } from "@nestjs/testing";
-import * as request from "supertest";
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
 
-import {OrdersModule, PaymentStatus} from "../src/orders";
+import { OrdersModule, PaymentStatus } from '../src/orders';
 
 let app: INestApplication;
 
 /**
  * for brevity
  */
-const paymentGatewayUrl = "http://localhost:1337"
-process.env.PAYMENT_GATEWAY = paymentGatewayUrl
+const paymentGatewayUrl = 'http://localhost:1337';
+process.env.PAYMENT_GATEWAY = paymentGatewayUrl;
 
 beforeAll(async () => {
   const moduleFixture = await Test.createTestingModule({
-    imports: [OrdersModule]
+    imports: [OrdersModule],
   }).compile();
 
   app = moduleFixture.createNestApplication();
@@ -22,13 +22,13 @@ beforeAll(async () => {
 });
 
 describe.skip(`when order was submitted`, () => {
-  const uuid = "test-order-uuid";
+  const uuid = 'test-order-uuid';
 
-  it("should ACK the order", () => {
+  it('should ACK the order', () => {
     return request(app.getHttpServer())
-      .post("/")
+      .post('/')
       .send({
-        uuid
+        uuid,
       })
       .expect(201);
   });
@@ -48,11 +48,10 @@ describe.skip(`when order was submitted`, () => {
         return request(app.getHttpServer())
           .get(`/${uuid}`)
           .expect(200)
-          .then(res => {
+          .then((res) => {
             expect(res.body.status).toEqual(PaymentStatus.Approved);
           });
       });
     });
   });
-
 });

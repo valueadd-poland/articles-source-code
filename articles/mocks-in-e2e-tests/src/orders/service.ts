@@ -1,40 +1,37 @@
-import { HttpService, Injectable } from "@nestjs/common";
+import { HttpService, Injectable } from '@nestjs/common';
 
 export enum PaymentStatus {
   Started,
   Pending,
   Rejected,
-  Approved
+  Approved,
 }
 
 @Injectable()
 export class Service {
+  /**
+   * for brevity, skip real configs
+   */
+  private paymentServiceUrl = process.env.PAYMENT_GATEWAY ?? ""
 
-  constructor(
-    private readonly httpService: HttpService
-  ) {
-  }
+  constructor(private readonly httpService: HttpService) {}
 
   async createOrder(
     uuid: string,
-    /**
-     * for brevity, skip real configs
-     */
-    paymentServiceUrl = process.env.PAYMENT_GATEWAY ?? ""
   ): Promise<void> {
-    await this.httpService.post(paymentServiceUrl, {
-      uuid,
-    }).toPromise();
+    await this.httpService
+      .post(this.paymentServiceUrl, {
+        uuid,
+      })
+      .toPromise();
   }
 
   async getOrderStatus(
-    uuid: string,
-    /**
-     * for brevity, skip real configs
-     */
-    paymentServiceUrl = process.env.PAYMENT_GATEWAY ?? ""
+    uuid: string
   ): Promise<PaymentStatus> {
-    const { status } = (await this.httpService.get(paymentServiceUrl + `/${uuid}`).toPromise()).data;
+    const { status } = (
+      await this.httpService.get(this.paymentServiceUrl + `/${uuid}`).toPromise()
+    ).data;
     return status as PaymentStatus;
-  };
+  }
 }

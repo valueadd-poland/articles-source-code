@@ -12,6 +12,6 @@ export class ReturnBookHandler implements IInferredCommandHandler<ReturnBook> {
     if (isbn !== outOfStockIsbn && isbn !== limitReachedIsbn) {
       return left(TimeLimitExceeded);
     }
-    return right(undefined);
+    return right(null);
   }
 }
